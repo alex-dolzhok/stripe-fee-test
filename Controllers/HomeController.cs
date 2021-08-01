@@ -4,23 +4,25 @@ using Microsoft.Extensions.Logging;
 using Stripe;
 using CardIssuerCountry.Builders;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using CardIssuerCountry.Configuration;
 
 namespace CardIssuerCountry.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<HomeController> logger;
 
         public HomeController(ILogger<HomeController> logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
         public IActionResult Index(
             [FromServices] InvoiceModelBuilder invoiceModelBuilder,
-            [FromServices] IConfiguration configuration)
+            [FromServices] IOptions<StripeKeyOptions> stripeKeyOptions)
         {
-            var stripePublishableKey = configuration.GetValue<string>("StripeOptins:PublishableKey");
+            var stripePublishableKey = stripeKeyOptions.Value.PublishableKey;
             var invoiceModel = invoiceModelBuilder.Build("US");
             var model = new IndexModel(invoiceModel, stripePublishableKey);
             return View(model);
@@ -32,7 +34,8 @@ namespace CardIssuerCountry.Controllers
         }
 
         [HttpGet]
-        public IActionResult Invoice([FromBody] ConfirmPaymentRequest request) {
+        public IActionResult Invoice([FromBody] ConfirmPaymentRequest request)
+        {
             // TODO: return invoice model with invoice amount & fee based on card country
             return Ok();
         }
@@ -42,7 +45,7 @@ namespace CardIssuerCountry.Controllers
             var paymentIntentService = new PaymentIntentService();
             PaymentIntent paymentIntent = null!;
 
-             try
+            try
             {
                 // var metadata = new Dictionary<string, string>();
                 // metadata.Add("Id", "12345");
@@ -73,11 +76,11 @@ namespace CardIssuerCountry.Controllers
                     };
                     paymentIntent = paymentIntentService.Create(createOptions);
                     var customer = paymentIntent.Customer;
-                    
+
                 }
                 if (request.PaymentIntentId != null)
                 {
-                    var confirmOptions = new PaymentIntentConfirmOptions{};
+                    var confirmOptions = new PaymentIntentConfirmOptions { };
                     paymentIntent = paymentIntentService.Confirm(
                         request.PaymentIntentId,
                         confirmOptions

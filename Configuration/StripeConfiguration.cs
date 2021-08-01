@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using CardIssuerCountry;
 using CardIssuerCountry.Repositories;
@@ -15,7 +16,13 @@ namespace CardIssuerCountry.Configuration
 
         public void ConfigureServiceLevel(IServiceCollection services)
         {
-            Stripe.StripeConfiguration.ApiKey = configuration.GetValue<string>("StripeOptins:ApiKey");
+            var stripeKeyOptions = configuration.GetSection("StripeOptions:KeyOptions");
+            services.Configure<StripeKeyOptions>(stripeKeyOptions);
+
+            var keyOptions = stripeKeyOptions.Get<StripeKeyOptions>();
+
+            Stripe.StripeConfiguration.ApiKey = keyOptions?.ApiKey
+                ?? throw new ApplicationException("Unable to find Stripe Api key");
             
             services.Configure<StripeFeeOptions>(options =>
                 options.StripeFeeProviders = configuration.GetSection("StripeOptions:FeeOptions")
