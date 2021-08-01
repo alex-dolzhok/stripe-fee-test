@@ -1,0 +1,47 @@
+@using CardIssuerCountry.Utils;
+@model InvoiceModel
+@{
+    var totalAmount = @Model.Amount + @Model.TransactionFee;
+}
+
+<div class="row">
+    <div class="col-md-6">
+        Invoice:
+        <dl class="row">
+            <dt class="col-md-6">Invoice amount</dt>
+            <dd class="col-md-6">@Formatter.Amount(Model.Amount) <span>@Model.Currency</span></dd>
+            <dt class="col-md-6">Transaction fee</dt>
+            <dd class="col-md-6">@Formatter.Amount(Model.TransactionFee)<span>@Model.Currency</span></dd>
+            <dt class="col-md-6">Total</dt>
+            <dd class="col-md-6">@Formatter.Amount(totalAmount) <span>@Model.Currency</span></dd>
+            <dt class="col-md-6">Card country</dt>
+            <dd class="col-md-6">@Model.CardCountry</dd>
+        </dl>
+        
+    </div>
+    <div class="col-md-6">
+        <form id='payment-form'>
+            <div class="md-3">
+                <label for="card-element" class="form-label">Card details:</label>
+            </div>
+
+            <div class="row g-3 align-items-center">
+                <div>
+                    <!-- placeholder for Elements -->
+                    <div id="card-element"></div>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">Submit Payment</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id='alert-placeholder' class="margin-top">
+    <div class="alert alert-success alert-dismissible fade" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+</div>

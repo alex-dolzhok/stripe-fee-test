@@ -15,7 +15,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Card_issuer_country": {
+    "CardIssuerCountry": {
       "commandName": "Project",
       "dotnetRunMessages": "true",
       "launchBrowser": true,

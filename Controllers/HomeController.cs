@@ -5,10 +5,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Card_issuer_country.Models;
+using CardIssuerCountry;
 using Stripe;
+using Microsoft.Extensions.Options;
+using CardIssuerCountry.Configuration;
+using CardIssuerCountry.Builders;
 
-namespace Card_issuer_country.Controllers
+namespace CardIssuerCountry.Controllers
 {
     public class HomeController : Controller
     {
@@ -19,9 +22,13 @@ namespace Card_issuer_country.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(
+            [FromServices] InvoiceModelBuilder invoiceModelBuilder
+            )
         {
-            return View();
+            var invoiceModel = invoiceModelBuilder.Build("us");
+            var model = new IndexModel(invoiceModel);
+            return View(model);
         }
 
         public IActionResult Privacy()
@@ -32,12 +39,13 @@ namespace Card_issuer_country.Controllers
         [HttpGet]
         public IActionResult Invoice([FromBody] ConfirmPaymentRequest request) {
             // TODO: return invoice model with invoice amount & fee based on card country
+            return Ok();
         }
 
         public IActionResult Pay([FromBody] ConfirmPaymentRequest request)
         {
             var paymentIntentService = new PaymentIntentService();
-            PaymentIntent paymentIntent = null;
+            PaymentIntent paymentIntent = null!;
 
              try
             {

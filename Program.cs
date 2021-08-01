@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Card_issuer_country
+namespace CardIssuerCountry
 {
     public class Program
     {

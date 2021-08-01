@@ -1,30 +1,32 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using CardIssuerCountry.Builders;
+using CardIssuerCountry.Configuration;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Stripe;
 
-namespace Card_issuer_country
+namespace CardIssuerCountry
 {
     public class Startup
     {
+        public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddOptions();
+
+            services.Configure<ProductOption>(Configuration.GetSection("ProductPriceOptins"));
+            new StripeConfiguration(Configuration).ConfigureServiceLevel(services);
+
+            services.AddTransient<InvoiceModelBuilder>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,8 +55,6 @@ namespace Card_issuer_country
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
-
-            StripeConfiguration.ApiKey = Configuration.GetValue<string>("StripeConfiguration:ApiKey");
         }
     }
 }

@@ -1,10 +1,10 @@
 using System;
 
-namespace Card_issuer_country.Models
+namespace CardIssuerCountry
 {
     public class ErrorViewModel
     {
-        public string RequestId { get; set; }
+        public string? RequestId { get; set; }
 
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
     }
