@@ -1,21 +1,17 @@
-@using CardIssuerCountry.Utils;
 @model InvoiceModel
-@{
-    var totalAmount = @Model.Amount + @Model.TransactionFee;
-}
 
 <div class="row">
     <div class="col-md-6">
         Invoice:
         <dl class="row">
             <dt class="col-md-6">Invoice amount</dt>
-            <dd class="col-md-6">@Formatter.Amount(Model.Amount) <span>@Model.Currency</span></dd>
+            <dd class="col-md-6">@Model.AmountFormatted <span>@Model.Currency</span></dd>
             <dt class="col-md-6">Transaction fee</dt>
-            <dd class="col-md-6">@Formatter.Amount(Model.TransactionFee)<span>@Model.Currency</span></dd>
+            <dd class="col-md-6" id="transaction-fee-text">@Model.TransactionFeeFormatted <span>@Model.Currency</span></dd>
             <dt class="col-md-6">Total</dt>
-            <dd class="col-md-6">@Formatter.Amount(totalAmount) <span>@Model.Currency</span></dd>
+            <dd class="col-md-6" id="total-amount-text">@Model.TotalAmountFormatted <span>@Model.Currency</span></dd>
             <dt class="col-md-6">Card country</dt>
-            <dd class="col-md-6">@Model.CardCountry</dd>
+            <dd class="col-md-6" id="card-country-text">@Model.CardCountry</dd>
         </dl>
         
     </div>

@@ -28,16 +28,20 @@ namespace CardIssuerCountry.Controllers
             return View(model);
         }
 
-        public IActionResult Privacy()
+        [HttpPut]
+        public IActionResult RecalculateInvoice(
+            [FromServices] InvoiceModelBuilder invoiceModelBuilder,
+            [FromBody] ConfirmPaymentRequest request)
         {
-            return View();
-        }
+            if(!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-        [HttpGet]
-        public IActionResult Invoice([FromBody] ConfirmPaymentRequest request)
-        {
-            // TODO: return invoice model with invoice amount & fee based on card country
-            return Ok();
+            var service = new PaymentMethodService();
+            var paymentMethod = service.Get(request.PaymentMethodId);
+            var countryCode = paymentMethod.Card.Country;
+
+            var invoice = invoiceModelBuilder.Build(countryCode);
+            return Ok(invoice);
         }
 
         public IActionResult Pay([FromBody] ConfirmPaymentRequest request)
@@ -93,6 +97,11 @@ namespace CardIssuerCountry.Controllers
             }
 
             return GeneratePaymentResponse(paymentIntent);
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

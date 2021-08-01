@@ -8,7 +8,7 @@ namespace CardIssuerCountry.Builders
 {
     public class InvoiceModelBuilder
     {
-        public readonly ProductOption product;
+        private readonly ProductOption product;
         private readonly StripeFeeOptions stripeFeeOptions;
 
         public InvoiceModelBuilder(
