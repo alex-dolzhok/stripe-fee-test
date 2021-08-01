@@ -22,11 +22,9 @@ namespace CardIssuerCountry.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index(
-            [FromServices] InvoiceModelBuilder invoiceModelBuilder
-            )
+        public IActionResult Index([FromServices] InvoiceModelBuilder invoiceModelBuilder)
         {
-            var invoiceModel = invoiceModelBuilder.Build("us");
+            var invoiceModel = invoiceModelBuilder.Build("US");
             var model = new IndexModel(invoiceModel);
             return View(model);
         }
