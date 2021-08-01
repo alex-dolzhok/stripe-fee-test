@@ -1,4 +1,5 @@
-﻿@model IndexModel
+﻿@using System
+@model IndexModel
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -11,7 +12,7 @@
 {
     <script type="text/javascript" src="~/js/payment.js"></script>
     <script type="text/javascript">
-        app.initCheckout();
+        app.initCheckout('@Model.StripePublishableKey', Math.Round(Model.Invoice.TotalAmount, 2, MidpointRounding.ToEven));
     </script>
 }
 

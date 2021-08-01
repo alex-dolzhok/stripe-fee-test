@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using CardIssuerCountry;
 using Stripe;
-using Microsoft.Extensions.Options;
-using CardIssuerCountry.Configuration;
 using CardIssuerCountry.Builders;
+using Microsoft.Extensions.Configuration;
 
 namespace CardIssuerCountry.Controllers
 {
@@ -22,10 +16,13 @@ namespace CardIssuerCountry.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index([FromServices] InvoiceModelBuilder invoiceModelBuilder)
+        public IActionResult Index(
+            [FromServices] InvoiceModelBuilder invoiceModelBuilder,
+            [FromServices] IConfiguration configuration)
         {
+            var stripePublishableKey = configuration.GetValue<string>("StripeOptins:PublishableKey");
             var invoiceModel = invoiceModelBuilder.Build("US");
-            var model = new IndexModel(invoiceModel);
+            var model = new IndexModel(invoiceModel, stripePublishableKey);
             return View(model);
         }
 

@@ -17,9 +17,12 @@
     };
 
     var $btn, $alertTemplate, $alertPlaceHolder;
+    var totalAmount;
 
-    function initCheckout() {
-        var stripe = Stripe('pk_test_XgWv7VN7YBsRfwaXP2O8YgWC');
+    function initCheckout(stripePublishableKey, totalAmountToPay) {
+        totalAmount = totalAmountToPay;
+        
+        var stripe = Stripe(stripePublishableKey);
         var elements = stripe.elements();
         
         var form = document.getElementById('payment-form');
