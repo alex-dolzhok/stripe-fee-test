@@ -47,7 +47,7 @@
                 card: cardElement,
                 billing_details: {
                     // Include any additional collected billing details.
-                    name: 'Jenny Rosen'
+                    name: 'Jhon Doe'
                 },
             }).then(stripePaymentMethodHandler);
         });
@@ -58,18 +58,19 @@
             $btn.prop('disabled', false);
         } else {
             $btn.prop('disabled', true);
+            $btn.text('Submit Payment');
         }
     }
 
-    function stripePaymentMethodHandler(result) {
-        if (result.error) {
-            showAlert('Payment failed! ' + result.error.message, 'alert-danger');
+    function stripePaymentMethodHandler(paymentMethodCreateResult) {
+        if (paymentMethodCreateResult.error) {
+            showAlert('Payment failed! ' + paymentMethodCreateResult.error.message, 'alert-danger');
         } else {
             fetch('/home/recalculateInvoice', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    payment_method_id: result.paymentMethod.id,
+                    payment_method_id: paymentMethodCreateResult.paymentMethod.id,
                 })
             }).then(function (result) {
                 if (!result.ok) {
@@ -80,7 +81,7 @@
                 } else {
                     // Handle server response (see Step 4)
                     result.json().then(function (json) {
-                        handleRecalculateInvoiceJson(json);
+                        handleRecalculateInvoiceJson(json, paymentMethodCreateResult.paymentMethod.id);
                     });
                 }
 
@@ -89,15 +90,24 @@
         }
     }
 
-    function handleRecalculateInvoiceJson(json) {
+    function handleRecalculateInvoiceJson(json, paymentMethodId) {
         if (json.totalAmountFormatted !== getTotalAmount()) {
-            showAlert('Invoice amount changed! According to the state of your courntry the total amount is ' + json.totalAmountFormatted, 'alert-warning');
+            showAlert('Invoice amount changed! According to the state of your courntry the total amount is ' + json.totalAmountFormatted + '. You was not charged yet.', 'alert-warning');
 
             setInnerTextNodeHtml($transactionFee, json.transactionFeeFormatted);
             setInnerTextNodeHtml($totalAmount, json.totalAmountFormatted);
             setInnerTextNodeHtml($cardCountryText, json.cardCountry);
+            $btn.text('Pay ' + json.totalAmountFormatted + ' ' + json.currency);
         } else {
-            // TODO: sweet alert success
+            fetch('/home/pay', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    payment_method_id: paymentMethodId,
+                })
+            }).then(function (result) {
+                handlePayResponse(result);
+            });
         }
     }
 
@@ -116,9 +126,21 @@
         });
     }
 
-    function handleServerResponse(json) {
-        console.info(JSON.stringify(json));
-        showAlert('Payment succeeded!', 'alert-success');
+    function handlePayResponse(fetchResult) {
+        if(!fetchResult.ok) {
+            showAlert('Paymet request failed with status ' + fetchResult.status, 'alert-danger');
+            return;
+        }
+
+        showAlert('Payment succeeded', 'alert-success');
+
+        Swal.fire(
+            'Transaction succeeded',
+            'Your payment has been competed successfully',
+            'success')
+            .then(function (result) {
+                window.location.reload();
+            });
     }
 
     function showAlert(text, className) {

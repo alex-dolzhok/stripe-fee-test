@@ -6,6 +6,7 @@ using CardIssuerCountry.Builders;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using CardIssuerCountry.Configuration;
+using System;
 
 namespace CardIssuerCountry.Controllers
 {
@@ -44,43 +45,35 @@ namespace CardIssuerCountry.Controllers
             return Ok(invoice);
         }
 
-        public IActionResult Pay([FromBody] ConfirmPaymentRequest request)
+        public IActionResult Pay(
+            [FromServices] InvoiceModelBuilder invoiceModelBuilder,
+            [FromServices] IOptions<ProductOption> productOption,
+            [FromBody] ConfirmPaymentRequest request)
         {
             var paymentIntentService = new PaymentIntentService();
             PaymentIntent paymentIntent = null!;
 
             try
             {
-                // var metadata = new Dictionary<string, string>();
-                // metadata.Add("Id", "12345");
-
-                // var options = new CustomerCreateOptions
-                // {
-                //     Email = "test@customer.com",
-                //     Metadata = metadata
-                // };
-
-                //var service = new CustomerService();
-                //var customer = service.Create(options);
-
                 if (request.PaymentMethodId != null)
                 {
                     var service = new PaymentMethodService();
                     var paymentMethod = service.Get(request.PaymentMethodId);
-                    var country = paymentMethod.Card.Country;
+                    var countryCode = paymentMethod.Card.Country;
+
+                    var invoice = invoiceModelBuilder.Build(countryCode);
+                    var currency = productOption.Value.Currency.ToLower();
 
                     // Create the PaymentIntent
                     var createOptions = new PaymentIntentCreateOptions
                     {
                         PaymentMethod = request.PaymentMethodId,
-                        Amount = 1099,
-                        Currency = "usd",
+                        Amount = (long)Math.Round(invoice.TotalAmount * 100, MidpointRounding.ToEven),
+                        Currency = currency,
                         ConfirmationMethod = "manual",
                         Confirm = true,
                     };
                     paymentIntent = paymentIntentService.Create(createOptions);
-                    var customer = paymentIntent.Customer;
-
                 }
                 if (request.PaymentIntentId != null)
                 {
