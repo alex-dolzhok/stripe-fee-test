@@ -17,7 +17,8 @@ namespace CardIssuerCountry.Classifiers
                 new Country("United Kingdom", "gb", false),
                 new Country("Denmark", "dk", true),
                 new Country("Sweden", "se", true),
-                new Country("Norway", "no", true)
+                new Country("Norway", "no", true),
+                new Country("Germany", "de", true)
             };
         }
     }
