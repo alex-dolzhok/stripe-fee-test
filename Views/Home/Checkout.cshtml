@@ -7,7 +7,11 @@
             <dt class="col-md-6">Invoice amount</dt>
             <dd class="col-md-6">@Model.AmountFormatted <span>@Model.Currency</span></dd>
             <dt class="col-md-6">Transaction fee</dt>
-            <dd class="col-md-6" id="transaction-fee-text">@Model.TransactionFeeFormatted <span>@Model.Currency</span></dd>
+            <dd class="col-md-6" id="transaction-fee-text">
+                @Model.TransactionFeeFormatted
+                <span>@Model.Currency</span>
+                <span>@Model.TransactionFeeDetails</span>
+            </dd>
             <dt class="col-md-6">Total</dt>
             <dd class="col-md-6" id="total-amount-text">@Model.TotalAmountFormatted <span>@Model.Currency</span></dd>
             <dt class="col-md-6">Card country</dt>

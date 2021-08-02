@@ -97,6 +97,7 @@
             setInnerTextNodeHtml($transactionFee, json.transactionFeeFormatted);
             setInnerTextNodeHtml($totalAmount, json.totalAmountFormatted);
             setInnerTextNodeHtml($cardCountryText, json.cardCountry);
+            $transactionFee.children().last().text(json.transactionFeeDetails);
             $btn.text('Pay ' + json.totalAmountFormatted + ' ' + json.currency);
         } else {
             fetch('/home/pay', {
@@ -117,7 +118,7 @@
 
     function setInnerTextNodeHtml($element, text) {
         var textNode = document.createTextNode(text);
-        getInnerTextNodes($element).replaceWith($(textNode));
+        getInnerTextNodes($element).first().replaceWith($(textNode));
     }
 
     function getInnerTextNodes($element) {

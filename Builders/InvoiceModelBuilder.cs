@@ -36,6 +36,7 @@ namespace CardIssuerCountry.Builders
                 Currency = product.Currency,
                 Amount = product.Amount,
                 TransactionFee = CalculateFinalInvoicePrice(product.Amount, fee) - product.Amount,
+                TransactionFeeDetails = $"({fee.PercentageFee}% + {fee.FixedFee} {product.Currency})",
                 CardCountry = cardCountry.Name
             };
         }

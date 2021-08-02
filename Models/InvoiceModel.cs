@@ -9,6 +9,7 @@ namespace CardIssuerCountry
 
         public decimal TransactionFee { get; init; }
         public string TransactionFeeFormatted => Formatter.Amount(TransactionFee);
+        public string TransactionFeeDetails { get; init; } = null!;
 
         public decimal TotalAmount => Amount + TransactionFee;
         public string TotalAmountFormatted => Formatter.Amount(TotalAmount);
